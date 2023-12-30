@@ -2,6 +2,7 @@ package tools;
 
 import entity.Card;
 import entity.Game;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -24,19 +25,21 @@ public class CardTool {  //实现游戏逻辑
         }
         game.setAllCardList(cardList);
     }
+
     public List<Card> initializeDeck(Game game) {  //初始化牌堆
         List<Card> cardList = new ArrayList<>();
         if (game.getDeckList().size() < 4) {
             for (int i = 0; i < 6; i++) {
                 addCardToDeck(cardList, game);
             }
-        }else {
+        } else {
             for (int i = 0; i < 5; i++) {
                 addCardToDeck(cardList, game);
             }
         }
         return cardList;
     }
+
     public void setDeck(Game game) {  //将牌堆加入deckList
         List<Card> cardList = new ArrayList<>();
         List<List<Card>> deckList = game.getDeckList();
@@ -47,7 +50,8 @@ public class CardTool {  //实现游戏逻辑
         }
         game.setDeckList(deckList);
     }
-    public void addCardToDeck(List<Card> cardList, Game game){  //随机往牌堆添加卡牌
+
+    public void addCardToDeck(List<Card> cardList, Game game) {  //随机往牌堆添加卡牌
         Random random = new Random();
         int randomIndex = random.nextInt(game.getAllCardList().size()); // 随机生成索引
         Card selectedCard = game.getAllCardList().get(randomIndex); // 获取被选中的卡牌

@@ -14,6 +14,7 @@ import java.util.List;
 public class Tool {  //通过游戏逻辑完成图形化界面
     double mouseX, mouseY;  //鼠标坐标
     double initialLayoutX, initialLayoutY;  //卡牌初始坐标
+    int imagePosition, deckPanePosition;  //记录拖动操作对于卡牌的索引
 
     public void getDeckPane(Pane pane, List<Pane> paneList) {
         ObservableList<Node> childNodes = pane.getChildren();  //得到所有牌堆节点
@@ -51,22 +52,44 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         }
         Image image = new Image(getClass().getResourceAsStream("/static/images/" + str + ".gif"));
         imageView.setImage(image);
-        initializeDragAndDrop(imageView, card);
+        card.setImageView(imageView);
         return imageView;
     }
 
-    public void location(Pane pane, int n) {  //给卡牌定位
+    public void location(Pane pane, int n, List<Card> cardList) {  //给卡牌定位
+        ObservableList<Node> imageViewList = pane.getChildren();
+        List<ImageView> imageList = new ArrayList<>();
+        int number = 0;  //记录个数
+        int high = 0;  //记录背面高度
+        for (int i = 0; i < imageViewList.size(); i++) {
+            imageList.add((ImageView) imageViewList.get(i));
+            if (!cardList.get(i).isCardFace()){
+                number++;
+            }
+        }
+        high = (number) * 5;
+        if (number == 0){
+            high = 0;
+        }
+        for (int i = 0; i < imageList.size(); i++) {
+            Card card = cardList.get(i);
+            if (!card.isCardFace()){
+                imageList.get(i).setLayoutY(i * 5);
+            }else {
+                System.out.println(high);
+                imageList.get(i).setLayoutY(high + (i - number) * 17);
+            }
+        }
+    }
+
+    public void location(Pane pane) {  //给卡牌定位
         ObservableList<Node> imageViewList = pane.getChildren();
         List<ImageView> imageList = new ArrayList<>();
         for (Node node : imageViewList) {
             imageList.add((ImageView) node);
         }
         for (int i = 0; i < imageList.size(); i++) {
-            if (n == 10) {
-                imageList.get(i).setLayoutX(i * 5);
-            } else {
-                imageList.get(i).setLayoutY(i * 5);
-            }
+            imageList.get(i).setLayoutX(i * 5);
         }
     }
 
@@ -77,7 +100,7 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         return newGame;
     }
 
-    public void initializeDragAndDrop(ImageView imageView, Card card) {  //卡牌的移动效果
+    public void initializeDragAndDrop(ImageView imageView, Card card, List<Pane> paneList) {  //卡牌的移动效果
         if (card.isCardFace()) {  //只有卡牌正面向上
             imageView.setOnMousePressed(event -> {
                 mouseX = event.getSceneX();
@@ -92,9 +115,26 @@ public class Tool {  //通过游戏逻辑完成图形化界面
                 imageView.setLayoutX(initialLayoutX + deltaX);
                 imageView.setLayoutY(initialLayoutY + deltaY);
             });
+            imageView.setOnMouseReleased(event -> {  // 返回到初始位置
+                imageView.setLayoutX(initialLayoutX);
+                imageView.setLayoutY(initialLayoutY);
+            });
         }
     }
-    public void removeDragAndDrop(ImageView imageView){  //消除卡牌的拖动效果
+
+    private Pane findTargetPane(double x, double y, List<Pane> paneList) {
+        for (Node node : paneList) {
+            if (node instanceof Pane) {
+                Pane pane = (Pane) node;
+                if (pane.getBoundsInParent().contains(x, y)) {
+                    return pane;
+                }
+            }
+        }
+        return null;
+    }
+
+    public void removeDragAndDrop(ImageView imageView) {  //消除卡牌的拖动效果
         imageView.setOnMousePressed(null);
         imageView.setOnMouseDragged(null);
     }

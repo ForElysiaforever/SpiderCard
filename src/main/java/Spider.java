@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class Spider extends Application {
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         Pane root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("templates/spider.fxml")));
         primaryStage.setTitle("蜘蛛纸牌");
         primaryStage.setScene(new Scene(root, 975, 700));
