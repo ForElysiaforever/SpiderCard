@@ -21,19 +21,6 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         paneList.addAll(conversionPane(childNodes));
     }
 
-    public void getImageView(Pane pane, List<ImageView> imageList) {
-        ObservableList<Node> childNodes = pane.getChildren();  //得到所有牌堆节点
-        imageList.addAll(conversionImage(childNodes));
-    }
-
-    public List<ImageView> conversionImage(ObservableList<Node> childNodes) {  //将子节点转化
-        List<ImageView> list = new ArrayList<>();
-        for (Node node : childNodes) {
-            list.add((ImageView) node);
-        }
-        return list;
-    }
-
     public List<Pane> conversionPane(ObservableList<Node> childNodes) {  //将子节点转化
         List<Pane> list = new ArrayList<>();
         for (Node node : childNodes) {
@@ -42,21 +29,16 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         return list;
     }
 
-    public ImageView generateImage(Card card) {  //根据花色和值生成对于的牌
-        String str;
-        ImageView imageView = new ImageView();
-        if (card.isCardFace()) {
-            str = card.getFlowerColor() + "-" + card.getNumber();
-        } else {
-            str = "rear";
+    public ImageView returnImage(Card card){
+        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/static/images/rear.gif")));
+        if (card.isCardFace()){
+            return card.getImageView();
+        }else {
+            return imageView;
         }
-        Image image = new Image(getClass().getResourceAsStream("/static/images/" + str + ".gif"));
-        imageView.setImage(image);
-        card.setImageView(imageView);
-        return imageView;
     }
 
-    public void location(Pane pane, int n, List<Card> cardList) {  //给卡牌定位
+    public void location(Pane pane, List<Card> cardList) {  //给卡牌定位
         ObservableList<Node> imageViewList = pane.getChildren();
         List<ImageView> imageList = new ArrayList<>();
         int number = 0;  //记录个数
@@ -76,13 +58,12 @@ public class Tool {  //通过游戏逻辑完成图形化界面
             if (!card.isCardFace()){
                 imageList.get(i).setLayoutY(i * 5);
             }else {
-                System.out.println(high);
                 imageList.get(i).setLayoutY(high + (i - number) * 17);
             }
         }
     }
 
-    public void location(Pane pane) {  //给卡牌定位
+    public void location(Pane pane) {  //给补牌堆定位
         ObservableList<Node> imageViewList = pane.getChildren();
         List<ImageView> imageList = new ArrayList<>();
         for (Node node : imageViewList) {
@@ -97,9 +78,23 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         Game newGame = new Game();
         cardTool.setCard(newGame);
         cardTool.setDeck(newGame);
+        cardTool.initializeRCard(newGame);
         return newGame;
     }
-
+    public void renderedDeck(List<Pane> paneList, List<List<Card>> cardList){  //渲染牌堆
+        for (int i = 0; i < cardList.size(); i++) {
+            Pane pane = paneList.get(i);
+            List<Card> list = cardList.get(i);
+            pane.getChildren().clear();
+            for (int j = 0; j < list.size(); j++) {
+                if (j == list.size() - 1){
+                    list.get(j).setCardFace(true);
+                }
+                pane.getChildren().add(returnImage(list.get(j)));
+            }
+            location(pane, list);
+        }
+    }
     public void initializeDragAndDrop(ImageView imageView, Card card, List<Pane> paneList) {  //卡牌的移动效果
         if (card.isCardFace()) {  //只有卡牌正面向上
             imageView.setOnMousePressed(event -> {
@@ -120,18 +115,6 @@ public class Tool {  //通过游戏逻辑完成图形化界面
                 imageView.setLayoutY(initialLayoutY);
             });
         }
-    }
-
-    private Pane findTargetPane(double x, double y, List<Pane> paneList) {
-        for (Node node : paneList) {
-            if (node instanceof Pane) {
-                Pane pane = (Pane) node;
-                if (pane.getBoundsInParent().contains(x, y)) {
-                    return pane;
-                }
-            }
-        }
-        return null;
     }
 
     public void removeDragAndDrop(ImageView imageView) {  //消除卡牌的拖动效果

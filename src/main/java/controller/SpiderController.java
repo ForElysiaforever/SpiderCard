@@ -5,6 +5,7 @@ import entity.Game;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -19,7 +20,7 @@ public class SpiderController {
     Game game = new Game();
     CardTool cardTool = new CardTool();
     Tool tool = new Tool();
-    List<ImageView> imageList = new ArrayList<>();  //牌堆卡牌节点集合
+    List<List<Card>> cardList = new ArrayList<>();  //牌堆卡牌集合
     List<Pane> paneList = new ArrayList<>();  //牌堆节点集合
     @FXML
     private Pane sCard;
@@ -39,51 +40,37 @@ public class SpiderController {
 
     @FXML
     void startTheGame(ActionEvent event) {  //开始游戏和重新开始
-        game = tool.updateGame(cardTool);
-        paneList.clear();
-        sCard.getChildren().clear();
+        //初始化
+        game =  tool.updateGame(cardTool);
         tool.getDeckPane(cardTable, paneList);
+        cardList = game.getDeckList();
         for (int i = 0; i < paneList.size(); i++) {
             paneList.get(i).getChildren().clear();
-            if (i < 4) {
-                for (int j = 0; j < 6; j++) {
-                    Card card = game.getDeckList().get(i).get(j);
-                    ImageView imageView = tool.generateImage(card);
-                    paneList.get(i).getChildren().add(imageView);
-                    tool.initializeDragAndDrop(imageView, card, paneList);
-                }
-                tool.location(paneList.get(i), i, game.getDeckList().get(i));
-            } else if (i < 10) {
-                for (int j = 0; j < 5; j++) {
-                    Card card = game.getDeckList().get(i).get(j);
-                    ImageView imageView = tool.generateImage(card);
-                    paneList.get(i).getChildren().add(imageView);
-                    tool.initializeDragAndDrop(imageView, card, paneList);
-                }
-                tool.location(paneList.get(i), i, game.getDeckList().get(i));
-            }
         }
-        for (int i = 0; i < 5; i++) {
-            Card card = new Card();
-            sCard.getChildren().add(tool.generateImage(card));
+        sCard.getChildren().clear();
+        //牌堆
+        tool.renderedDeck(paneList, cardList);
+        cardTool.determineIfTheCardCanBeMoved(cardList, game.getMobileCards());
+        //补牌堆
+        for (int i = 0; i < game.getReplacementDeck().size(); i++) {
+            sCard.getChildren().add(game.getReplacementDeck().get(i).getImageView());
         }
         tool.location(sCard);
     }
 
     @FXML
     void supplementaryCard(MouseEvent event) {  //补牌
-        if (!sCard.getChildren().isEmpty()) {
-            for (int i = 0; i < paneList.size() - 1; i++) {
-                cardTool.addCardToDeck(game.getDeckList().get(i), game);
-                List<Card> cardList = game.getDeckList().get(i);
-                int lastPosition = cardList.size() - 1;
-                cardList.get(lastPosition).setCardFace(true);  //新添加的牌为正面
-                ImageView imageView = tool.generateImage(cardList.get(lastPosition));
-                paneList.get(i).getChildren().add(imageView);
-                tool.location(paneList.get(i), 1, game.getDeckList().get(i));
-                tool.initializeDragAndDrop(imageView, cardList.get(lastPosition), paneList);
+        if (!sCard.getChildren().isEmpty()){
+            for (int i = 0; i < cardList.size(); i++) {
+                List<Card> list = cardList.get(i);
+                cardTool.addCardToDeck(list, game);
+                list.get(list.size() - 1).setCardFace(true);
             }
+            tool.renderedDeck(paneList, cardList);
             sCard.getChildren().remove(sCard.getChildren().size() - 1);
+            cardTool.determineIfTheCardCanBeMoved(cardList, game.getMobileCards());
+        }else {
+
         }
     }
 }

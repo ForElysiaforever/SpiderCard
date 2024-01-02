@@ -72,7 +72,8 @@
             <Pane layoutX="706.0" prefHeight="385.0" prefWidth="70.0" />
             <Pane layoutX="805.0" prefHeight="385.0" prefWidth="70.0" />
             <Pane layoutX="903.0" prefHeight="385.0" prefWidth="70.0" />
-            <StackPane fx:id="front" prefHeight="0.0" prefWidth="0.0" />
          </children></Pane>
+      <StackPane fx:id="front" prefHeight="0.0" prefWidth="0.0" />
+      <Pane fx:id="removeCard" layoutX="36.0" layoutY="571.0" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#supplementaryCard" prefHeight="95.0" prefWidth="89.0" />
    </children>
 </AnchorPane>

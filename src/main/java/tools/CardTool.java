@@ -2,6 +2,8 @@ package tools;
 
 import entity.Card;
 import entity.Game;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,10 +22,27 @@ public class CardTool {  //实现游戏逻辑
                 Card card = new Card();
                 card.setFlowerColor(1);
                 card.setNumber(j + 1);
+                generateImage(card);
                 cardList.add(card);
             }
         }
         game.setAllCardList(cardList);
+    }
+
+    public ImageView generateImage(Card card) {  //根据花色和值生成对于的牌
+        String str;
+        ImageView imageView = new ImageView();
+        str = card.getFlowerColor() + "-" + card.getNumber();
+        Image image = new Image(getClass().getResourceAsStream("/static/images/" + str + ".gif"));
+        imageView.setImage(image);
+        card.setImageView(imageView);
+        return imageView;
+    }
+    public void generateImageBack(Card card) {  //卡牌背面
+        ImageView imageView = new ImageView();
+        Image image = new Image(getClass().getResourceAsStream("/static/images/rear.gif"));
+        imageView.setImage(image);
+        card.setImageView(imageView);
     }
 
     public List<Card> initializeDeck(Game game) {  //初始化牌堆
@@ -57,6 +76,40 @@ public class CardTool {  //实现游戏逻辑
         Card selectedCard = game.getAllCardList().get(randomIndex); // 获取被选中的卡牌
         cardList.add(selectedCard); // 将被选中的卡牌添加到cardList中
         game.getAllCardList().remove(randomIndex); // 从allCardList中删除被选中的卡牌
+    }
+
+    public void initializeRCard(Game game) {  //初始化补牌堆
+        List<Card> cardList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Card card = new Card();
+            generateImageBack(card);
+            cardList.add(card);
+        }
+        game.setReplacementDeck(cardList);
+    }
+    public void determineIfTheCardCanBeMoved(List<List<Card>> deckList, List<List<Card>> mobileCards){  //判断可移动卡牌
+        mobileCards.clear();
+        for (int i = 0; i < deckList.size(); i++) {
+            List<Card> list = deckList.get(i);
+            List<Card> newList = new ArrayList<>();
+            List<Card> mList = new ArrayList<>();
+            for (Card card : list) {
+                if (card.isCardFace()) {
+                    newList.add(card);
+                }
+            }
+            for (int j = newList.size() - 1; j >= 0; j--) {
+                mList.add(newList.get(newList.size() - 1));
+                if (j != 0){
+                    if (newList.get(j).getNumber() == newList.get(j- 1).getNumber() - 1){
+                        mList.add(0,newList.get(j - 1));
+                    }else {
+                        break;
+                    }
+                }
+            }
+            mobileCards.add(mList);
+        }
     }
 
 //    public void setChoose(int n) {  //选择难度
