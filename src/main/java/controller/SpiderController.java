@@ -5,8 +5,6 @@ import entity.Game;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -25,7 +23,7 @@ public class SpiderController {
     @FXML
     private Pane sCard;
     @FXML
-    private StackPane front;
+    private Pane front;
 
     @FXML
     private ToggleGroup Difficulty;
@@ -44,18 +42,16 @@ public class SpiderController {
         game =  tool.updateGame(cardTool);
         tool.getDeckPane(cardTable, paneList);
         cardList = game.getDeckList();
-        for (int i = 0; i < paneList.size(); i++) {
-            paneList.get(i).getChildren().clear();
-        }
         sCard.getChildren().clear();
         //牌堆
         tool.renderedDeck(paneList, cardList);
         cardTool.determineIfTheCardCanBeMoved(cardList, game.getMobileCards());
+        tool.initializeDragAndDrop(game.getMobileCards(), front, paneList, cardList);
         //补牌堆
         for (int i = 0; i < game.getReplacementDeck().size(); i++) {
             sCard.getChildren().add(game.getReplacementDeck().get(i).getImageView());
         }
-        tool.location(sCard);
+        tool.locationSCard(sCard);
     }
 
     @FXML
@@ -68,7 +64,9 @@ public class SpiderController {
             }
             tool.renderedDeck(paneList, cardList);
             sCard.getChildren().remove(sCard.getChildren().size() - 1);
+            tool.removeEvent(game.getMobileCards());
             cardTool.determineIfTheCardCanBeMoved(cardList, game.getMobileCards());
+            tool.initializeDragAndDrop(game.getMobileCards(), front, paneList, cardList);
         }else {
 
         }

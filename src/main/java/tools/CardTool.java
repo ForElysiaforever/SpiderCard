@@ -98,8 +98,8 @@ public class CardTool {  //实现游戏逻辑
                     newList.add(card);
                 }
             }
+            mList.add(newList.get(newList.size() - 1));
             for (int j = newList.size() - 1; j >= 0; j--) {
-                mList.add(newList.get(newList.size() - 1));
                 if (j != 0){
                     if (newList.get(j).getNumber() == newList.get(j- 1).getNumber() - 1){
                         mList.add(0,newList.get(j - 1));
