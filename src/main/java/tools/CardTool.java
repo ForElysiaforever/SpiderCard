@@ -98,6 +98,10 @@ public class CardTool {  //实现游戏逻辑
                     newList.add(card);
                 }
             }
+            if (newList.size() == 0){
+                mobileCards.add(newList);
+                continue;
+            }
             mList.add(newList.get(newList.size() - 1));
             for (int j = newList.size() - 1; j >= 0; j--) {
                 if (j != 0){
@@ -111,7 +115,19 @@ public class CardTool {  //实现游戏逻辑
             mobileCards.add(mList);
         }
     }
-
+    public boolean judgeRemoveCard(List<List<Card>> mobileCards, List<List<Card>> deckList){
+        List<Card> cardList = new ArrayList<>();
+        for (int i = 0; i < mobileCards.size(); i++) {
+            cardList = deckList.get(i);
+            if (mobileCards.get(i).size() == 13){
+                for (int j = 0; j < 13; j++) {
+                    cardList.remove(cardList.size() - 1);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 //    public void setChoose(int n) {  //选择难度
 //        switch (n) {
 //            case 1:

@@ -2,12 +2,13 @@ package controller;
 
 import entity.Card;
 import entity.Game;
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+
 import tools.CardTool;
 import tools.Tool;
 
@@ -24,6 +25,8 @@ public class SpiderController {
     private Pane sCard;
     @FXML
     private Pane front;
+    @FXML
+    private Pane timeAndSold;
 
     @FXML
     private ToggleGroup Difficulty;
@@ -39,14 +42,14 @@ public class SpiderController {
     @FXML
     void startTheGame(ActionEvent event) {  //开始游戏和重新开始
         //初始化
-        game =  tool.updateGame(cardTool);
+        game = tool.updateGame(cardTool);
         tool.getDeckPane(cardTable, paneList);
         cardList = game.getDeckList();
         sCard.getChildren().clear();
         //牌堆
         tool.renderedDeck(paneList, cardList);
         cardTool.determineIfTheCardCanBeMoved(cardList, game.getMobileCards());
-        tool.initializeDragAndDrop(game.getMobileCards(), front, paneList, cardList);
+        tool.initializeDragAndDrop(front, paneList, game);
         //补牌堆
         for (int i = 0; i < game.getReplacementDeck().size(); i++) {
             sCard.getChildren().add(game.getReplacementDeck().get(i).getImageView());
@@ -56,7 +59,7 @@ public class SpiderController {
 
     @FXML
     void supplementaryCard(MouseEvent event) {  //补牌
-        if (!sCard.getChildren().isEmpty()){
+        if (!sCard.getChildren().isEmpty()) {
             for (int i = 0; i < cardList.size(); i++) {
                 List<Card> list = cardList.get(i);
                 cardTool.addCardToDeck(list, game);
@@ -66,8 +69,8 @@ public class SpiderController {
             sCard.getChildren().remove(sCard.getChildren().size() - 1);
             tool.removeEvent(game.getMobileCards());
             cardTool.determineIfTheCardCanBeMoved(cardList, game.getMobileCards());
-            tool.initializeDragAndDrop(game.getMobileCards(), front, paneList, cardList);
-        }else {
+            tool.initializeDragAndDrop(front, paneList, game);
+        } else {
 
         }
     }

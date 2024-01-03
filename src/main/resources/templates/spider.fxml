@@ -42,7 +42,7 @@
             <Menu mnemonicParsing="false" text="读档" />
         </menus>
       </MenuBar>
-      <Pane layoutX="390.0" layoutY="564.0" prefHeight="93.0" prefWidth="173.0" style="-fx-background-color: rgb(4,79,20);">
+      <Pane fx:id="timeAndSold" layoutX="390.0" layoutY="564.0" prefHeight="93.0" prefWidth="173.0" style="-fx-background-color: rgb(4,79,20);">
          <children>
             <Label layoutX="39.0" layoutY="20.0" text="时间：00：00" textFill="#ebe8e8" />
             <Label layoutX="39.0" layoutY="59.0" text="分数：00：00" textFill="#eee7e7" />
@@ -74,6 +74,6 @@
             <Pane layoutX="903.0" prefHeight="385.0" prefWidth="70.0" />
          </children></Pane>
       <Pane fx:id="front" />
-      <Pane fx:id="removeCard" layoutX="36.0" layoutY="571.0" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#supplementaryCard" prefHeight="95.0" prefWidth="89.0" />
+      <Pane fx:id="removeCard" layoutX="44.0" layoutY="563.0" nodeOrientation="RIGHT_TO_LEFT" onMouseClicked="#supplementaryCard" prefHeight="95.0" prefWidth="89.0" />
    </children>
 </AnchorPane>

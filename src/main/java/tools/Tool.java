@@ -4,6 +4,7 @@ import entity.Card;
 import entity.Game;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -61,7 +62,7 @@ public class Tool {  //通过游戏逻辑完成图形化界面
             if (!card.isCardFace()) {
                 imageList.get(i).setLayoutY(i * 5);
             } else {
-                imageList.get(i).setLayoutY(high + (i - number) * 20);
+                imageList.get(i).setLayoutY(high + (i - number) * 25);
             }
         }
     }
@@ -103,13 +104,12 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         }
     }
 
-    public void initializeDragAndDrop(List<List<Card>> mobileCards, Pane front, List<Pane> paneList, List<List<Card>> cardList) {  //卡牌的移动效果
-        for (int i = 0; i < mobileCards.size(); i++) {
-            List<Card> list = mobileCards.get(i);
-            for (int j = 0; j < list.size(); j++) {
+    public void initializeDragAndDrop(Pane front, List<Pane> paneList,  Game game) {  //卡牌的移动效果
+        for (int i = 0; i < game.getMobileCards().size(); i++) {
+            for (int j = 0; j < game.getMobileCards().get(i).size(); j++) {
                 int finalI = i;
                 int finalJ = j;
-                ImageView imageView = list.get(finalJ).getImageView();
+                ImageView imageView = game.getMobileCards().get(i).get(finalJ).getImageView();
                 imageView.setOnMousePressed(event -> {
                     mouseX = event.getSceneX();
                     mouseY = event.getSceneY();
@@ -117,7 +117,7 @@ public class Tool {  //通过游戏逻辑完成图形化界面
                     clickJ = finalJ;
                     initialLayoutX = imageView.getParent().getLayoutX();
                     initialLayoutY = imageView.getLayoutY() + 46;
-                    removeImage(paneList , clickI, list.size() - clickJ, front);
+                    removeImage(paneList , clickI, game.getMobileCards().get(finalI).size() - finalJ, front);
                     front.setLayoutY(initialLayoutY);
                     front.setLayoutX(initialLayoutX);
                     location(front);
@@ -131,6 +131,7 @@ public class Tool {  //通过游戏逻辑完成图形化界面
                 front.setOnMouseReleased(event -> {  // 返回到初始位置
                     mouseX = event.getSceneX();
                     mouseY = event.getSceneY();
+                    renderedDeck(paneList, game.getDeckList());
                     Pane pane = null;
                     for (Pane pane1 : paneList) {
                         if (pane1.getBoundsInParent().contains(mouseX, mouseY)){
@@ -139,18 +140,36 @@ public class Tool {  //通过游戏逻辑完成图形化界面
                         }
                     }
                     int index = paneList.indexOf(pane);
+                    if (index == clickI){
+                        return;
+                    }
                     moveImage(paneList, index, front);
                     front.getChildren().clear();
-                    removeFromDeck(cardList, clickI, list.size() - clickJ, index);
-                    removeEvent(mobileCards);
-                    renderedDeck(paneList, cardList);
-                    cardTool.determineIfTheCardCanBeMoved(cardList, mobileCards);
-                    initializeDragAndDrop(mobileCards, front, paneList, cardList);
+                    Card selected = game.getMobileCards().get(clickI).get(clickJ);
+                    int position = game.getDeckList().get(clickI).indexOf(selected);  //找到索引
+                    removeFromDeck(game.getDeckList(), clickI, position, index);
+                    removeEvent(game.getMobileCards());
+                    renderedDeck(paneList, game.getDeckList());
+                    cardTool.determineIfTheCardCanBeMoved(game.getDeckList(), game.getMobileCards());
+                    if (cardTool.judgeRemoveCard(game.getMobileCards(), game.getDeckList())){
+                        renderedDeck(paneList, game.getDeckList());
+                        cardTool.determineIfTheCardCanBeMoved(game.getDeckList(), game.getMobileCards());
+                    }
+                    for (List<Card> mobileCard : game.getMobileCards()) {
+                        System.out.println(mobileCard.size());
+                    }
+                    initializeDragAndDrop(front, paneList, game);
                 });
             }
         }
     }
-
+    public void addRemoveDeck(Game game, Pane removeDeck){
+        ImageView imageView = new ImageView(new Image(getClass().getResourceAsStream("/static/images/1-13.gif")));
+        Card card = new Card();
+        card.setImageView(imageView);
+        game.getRemoveDeck().add(card);
+        removeDeck.getChildren().add(imageView);
+    }
     public void location(Pane front) {  //给front的卡牌定位
         ObservableList<Node> imageViewList = front.getChildren();
         List<ImageView> imageList = new ArrayList<>();
@@ -162,9 +181,8 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         }
     }
 
-    public void removeFromDeck(List<List<Card>> deckList, int clickI, int clickJ, int index) {
+    public void removeFromDeck(List<List<Card>> deckList, int clickI, int position, int index) {
         List<Card> cardList = deckList.get(clickI);
-        int position = cardList.size() - clickJ;
         while (cardList.size() > position){
             deckList.get(index).add(cardList.remove(position));
         }
@@ -178,7 +196,6 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         }
     }
     public void moveImage(List<Pane> paneList, int index, Pane front){
-        System.out.println(index);
         Pane pane = paneList.get(index);
         while (!front.getChildren().isEmpty()){
             pane.getChildren().addAll(front.getChildren());
