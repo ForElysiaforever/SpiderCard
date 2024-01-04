@@ -19,27 +19,25 @@
             <items>
               <MenuItem mnemonicParsing="false" onAction="#startTheGame" text="开始游戏" />
                   <MenuItem mnemonicParsing="false" onAction="#startTheGame" text="新的游戏" />
-                  <MenuItem mnemonicParsing="false" text="显示可行操作" />
                   <SeparatorMenuItem mnemonicParsing="false" />
-                  <RadioMenuItem mnemonicParsing="false" selected="true" text="简单：单一花色">
+                  <RadioMenuItem mnemonicParsing="false" onAction="#simple" selected="true" text="简单：单一花色">
                      <toggleGroup>
                         <ToggleGroup fx:id="Difficulty" />
                      </toggleGroup>
                   </RadioMenuItem>
-                  <RadioMenuItem mnemonicParsing="false" text="普通：双花色" toggleGroup="$Difficulty" />
-                  <RadioMenuItem mnemonicParsing="false" text="困难：四花色" toggleGroup="$Difficulty" />
+                  <RadioMenuItem mnemonicParsing="false" onAction="#universal" text="普通：双花色" toggleGroup="$Difficulty" />
+                  <RadioMenuItem mnemonicParsing="false" onAction="#difficult" text="困难：四花色" toggleGroup="$Difficulty" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#end" text="退出" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="帮助">
-            <items>
-              <MenuItem mnemonicParsing="false" text="规则" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="撤回" />
-            <Menu mnemonicParsing="false" text="保存" />
-            <Menu mnemonicParsing="false" text="读档" />
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#back" text="撤回" />
+                  <MenuItem mnemonicParsing="false" onAction="#saveGame" text="保存" />
+                  <MenuItem mnemonicParsing="false" onAction="#readGame" text="读档" />
+                  <MenuItem mnemonicParsing="false" onAction="#achievement" text="成就" />
+               </items></Menu>
         </menus>
       </MenuBar>
       <Pane fx:id="timeAndSold" layoutX="390.0" layoutY="564.0" prefHeight="93.0" prefWidth="173.0" style="-fx-background-color: rgb(4,79,20);">

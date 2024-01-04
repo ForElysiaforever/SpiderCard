@@ -2,11 +2,13 @@ package entity;
 
 import javafx.scene.layout.Pane;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game {
+public class Game implements Serializable {
     private int choose = 1;  //默认简单难度
+    private int number = 5;
     private List<Card> removeDeck = new ArrayList<>();  //消除
     private List<Card> replacementDeck = new ArrayList<>();  //补牌次数，默认五次
     private List<List<Card>> deckList = new ArrayList<>();  //牌堆集合
@@ -31,6 +33,14 @@ public class Game {
 
     public List<Card> getReplacementDeck() {
         return replacementDeck;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     public void setReplacementDeck(List<Card> replacementDeck) {
@@ -60,11 +70,11 @@ public class Game {
     public void setMobileCards(List<List<Card>> mobileCards) {
         this.mobileCards = mobileCards;
     }
-
     @Override
     public String toString() {
         return "Game{" +
                 "choose=" + choose +
+                ", number=" + number +
                 ", removeDeck=" + removeDeck +
                 ", replacementDeck=" + replacementDeck +
                 ", deckList=" + deckList +

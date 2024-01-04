@@ -2,12 +2,14 @@ package entity;
 
 import javafx.scene.image.ImageView;
 
-public class Card {
+import java.io.Serializable;
+
+public class Card implements Serializable {
     private boolean cardFace = false;    //牌面true为正面false为背面
     private boolean isRemove = false;  //是否被消除
     private int flowerColor = 1;    //花色,1为黑桃,2为红桃,3为黑梅,4为红梅,默认难度简单
     private int number = 0;    //卡牌的值
-    private ImageView imageView;  //对应的卡牌
+    private transient  ImageView imageView;  //对应的卡牌
 
     public boolean isCardFace() {
         return cardFace;

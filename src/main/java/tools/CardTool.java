@@ -10,20 +10,58 @@ import java.util.List;
 import java.util.Random;
 
 public class CardTool {  //实现游戏逻辑
-    final int SIMPLE = 1;  //简单难度
-    final int UNIVERSAL = 2;  //普通难度
-    final int DIFFICULTY = 3;  //困难难度
+    public final int SIMPLE = 1;  //简单难度
+    public final int UNIVERSAL = 2;  //普通难度
+    public final int DIFFICULTY = 3;  //困难难度
 
-    /*简单*/
     public void setCard(Game game) {  //初始化卡牌，将卡牌加入cardList
         List<Card> cardList = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 13; j++) {
-                Card card = new Card();
-                card.setFlowerColor(1);
-                card.setNumber(j + 1);
-                generateImage(card);
-                cardList.add(card);
+        /*简单*/
+        if (game.getChoose() == SIMPLE) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 13; j++) {
+                    Card card = new Card();
+                    card.setFlowerColor(1);
+                    card.setNumber(j + 1);
+                    generateImage(card);
+                    cardList.add(card);
+                }
+            }
+        }
+        /*普通*/
+        if (game.getChoose() == UNIVERSAL) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 13; j++) {
+                    Card card = new Card();
+                    if (i < 4) {
+                        card.setFlowerColor(1);
+                    } else {
+                        card.setFlowerColor(2);
+                    }
+                    card.setNumber(j + 1);
+                    generateImage(card);
+                    cardList.add(card);
+                }
+            }
+        }
+        /*困难*/
+        if (game.getChoose() == DIFFICULTY) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 13; j++) {
+                    Card card = new Card();
+                    if (i < 2) {
+                        card.setFlowerColor(1);
+                    } else if (i < 4) {
+                        card.setFlowerColor(2);
+                    } else if (i < 6) {
+                        card.setFlowerColor(3);
+                    } else {
+                        card.setFlowerColor(4);
+                    }
+                    card.setNumber(j + 1);
+                    generateImage(card);
+                    cardList.add(card);
+                }
             }
         }
         game.setAllCardList(cardList);
@@ -38,6 +76,7 @@ public class CardTool {  //实现游戏逻辑
         card.setImageView(imageView);
         return imageView;
     }
+
     public void generateImageBack(Card card) {  //卡牌背面
         ImageView imageView = new ImageView();
         Image image = new Image(getClass().getResourceAsStream("/static/images/rear.gif"));
@@ -80,14 +119,15 @@ public class CardTool {  //实现游戏逻辑
 
     public void initializeRCard(Game game) {  //初始化补牌堆
         List<Card> cardList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < game.getNumber(); i++) {
             Card card = new Card();
             generateImageBack(card);
             cardList.add(card);
         }
         game.setReplacementDeck(cardList);
     }
-    public void determineIfTheCardCanBeMoved(List<List<Card>> deckList, List<List<Card>> mobileCards){  //判断可移动卡牌
+
+    public void determineIfTheCardCanBeMoved(List<List<Card>> deckList, List<List<Card>> mobileCards) {  //判断可移动卡牌
         mobileCards.clear();
         for (int i = 0; i < deckList.size(); i++) {
             List<Card> list = deckList.get(i);
@@ -98,16 +138,17 @@ public class CardTool {  //实现游戏逻辑
                     newList.add(card);
                 }
             }
-            if (newList.size() == 0){
+            if (newList.size() == 0) {
                 mobileCards.add(newList);
                 continue;
             }
             mList.add(newList.get(newList.size() - 1));
             for (int j = newList.size() - 1; j >= 0; j--) {
-                if (j != 0){
-                    if (newList.get(j).getNumber() == newList.get(j- 1).getNumber() - 1){
-                        mList.add(0,newList.get(j - 1));
-                    }else {
+                if (j != 0) {
+                    if (newList.get(j).getNumber() == newList.get(j - 1).getNumber() - 1
+                            &&  newList.get(j).getFlowerColor() == newList.get(j - 1).getFlowerColor()) {
+                        mList.add(0, newList.get(j - 1));
+                    } else {
                         break;
                     }
                 }
@@ -115,11 +156,12 @@ public class CardTool {  //实现游戏逻辑
             mobileCards.add(mList);
         }
     }
-    public boolean judgeRemoveCard(List<List<Card>> mobileCards, List<List<Card>> deckList){
+
+    public boolean judgeRemoveCard(List<List<Card>> mobileCards, List<List<Card>> deckList) {
         List<Card> cardList = new ArrayList<>();
         for (int i = 0; i < mobileCards.size(); i++) {
             cardList = deckList.get(i);
-            if (mobileCards.get(i).size() == 13){
+            if (mobileCards.get(i).size() == 13) {
                 for (int j = 0; j < 13; j++) {
                     cardList.remove(cardList.size() - 1);
                 }

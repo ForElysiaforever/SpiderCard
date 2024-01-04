@@ -4,7 +4,6 @@ import entity.Card;
 import entity.Game;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -18,7 +17,7 @@ public class Tool {  //通过游戏逻辑完成图形化界面
     double mouseX, mouseY;  //鼠标坐标
     double initialLayoutX, initialLayoutY;  //卡牌初始坐标
     int clickI, clickJ; //记录被点击卡牌的索引
-
+    List<Game> gameList = new ArrayList<>();  //保存游戏操作
 
     public void getDeckPane(Pane pane, List<Pane> paneList) {
         ObservableList<Node> childNodes = pane.getChildren();  //得到所有牌堆节点
@@ -40,6 +39,10 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         } else {
             return imageView;
         }
+    }
+
+    public List<Game> getGameList() {
+        return gameList;
     }
 
     public void location(Pane pane, List<Card> cardList) {  //给卡牌定位
@@ -78,8 +81,9 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         }
     }
 
-    public Game updateGame(CardTool cardTool) {  //更新
+    public Game updateGame(CardTool cardTool, int choose) {  //更新
         Game newGame = new Game();
+        newGame.setChoose(choose);
         cardTool.setCard(newGame);
         cardTool.setDeck(newGame);
         cardTool.initializeRCard(newGame);
@@ -104,7 +108,7 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         }
     }
 
-    public void initializeDragAndDrop(Pane front, List<Pane> paneList,  Game game) {  //卡牌的移动效果
+    public void initializeDragAndDrop(Pane front, List<Pane> paneList, Game game, Pane removeDeck) {  //卡牌的移动效果
         for (int i = 0; i < game.getMobileCards().size(); i++) {
             for (int j = 0; j < game.getMobileCards().get(i).size(); j++) {
                 int finalI = i;
@@ -147,18 +151,19 @@ public class Tool {  //通过游戏逻辑完成图形化界面
                     front.getChildren().clear();
                     Card selected = game.getMobileCards().get(clickI).get(clickJ);
                     int position = game.getDeckList().get(clickI).indexOf(selected);  //找到索引
-                    removeFromDeck(game.getDeckList(), clickI, position, index);
+                    if (!removeFromDeck(game.getDeckList(), clickI, position, index)){
+                        return;
+                    }
                     removeEvent(game.getMobileCards());
                     renderedDeck(paneList, game.getDeckList());
                     cardTool.determineIfTheCardCanBeMoved(game.getDeckList(), game.getMobileCards());
                     if (cardTool.judgeRemoveCard(game.getMobileCards(), game.getDeckList())){
                         renderedDeck(paneList, game.getDeckList());
+                        addRemoveDeck(game, removeDeck);
+                        locationSCard(removeDeck);
                         cardTool.determineIfTheCardCanBeMoved(game.getDeckList(), game.getMobileCards());
                     }
-                    for (List<Card> mobileCard : game.getMobileCards()) {
-                        System.out.println(mobileCard.size());
-                    }
-                    initializeDragAndDrop(front, paneList, game);
+                    initializeDragAndDrop(front, paneList, game, removeDeck);
                 });
             }
         }
@@ -181,11 +186,23 @@ public class Tool {  //通过游戏逻辑完成图形化界面
         }
     }
 
-    public void removeFromDeck(List<List<Card>> deckList, int clickI, int position, int index) {
+    public boolean removeFromDeck(List<List<Card>> deckList, int clickI, int position, int index) {
         List<Card> cardList = deckList.get(clickI);
-        while (cardList.size() > position){
-            deckList.get(index).add(cardList.remove(position));
+        List<Card> cardList1 = deckList.get(index);
+        if (cardList1.size() != 0){
+            if (cardList1.get(cardList1.size() - 1).getNumber() == cardList.get(position).getNumber() + 1){
+                while (cardList.size() > position){
+                    deckList.get(index).add(cardList.remove(position));
+                }
+                return true;
+            }
+        }else {
+            while (cardList.size() > position){
+                deckList.get(index).add(cardList.remove(position));
+            }
+            return true;
         }
+        return false;
     }
 
     public void removeImage(List<Pane> paneList, int clickI, int number, Pane front) {
